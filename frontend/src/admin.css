@@ -1,0 +1,45 @@
+/* admin.css */
+
+/* Set Arial as the font-family for the whole component */
+body, .container, .table-container, table, th, td {
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Style for the container div */
+  .container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Style for the table container */
+  .table-container {
+    margin: 0 auto;
+    max-width: 60%; /* Adjust the width as needed */
+  }
+  
+  /* Style for the table */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%; /* Ensure the table doesn't overflow its container */
+  }
+  
+  /* Style for table header (th) */
+  th {
+    background-color: #f2f2f2;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  /* Style for table data (td) */
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  /* Style for the "inactive" class */
+  .inactive {
+    background-color: red;
+    color:
+  }
