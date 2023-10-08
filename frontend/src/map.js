@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import csv from 'csvtojson'
 
 // URL of the GeoJSON file in the public directory
 const nepalDistrictsDataUrl = '/data/nepal-districts.geojson';
@@ -13,6 +14,7 @@ function MapWithFireLocation() {
     const [nepalDistrictsData, setNepalDistrictsData] = useState(null);
     const [locationList, setlocationList] = useState([]);
     const [viewAllLocations, setViewAllLocations] = useState(true);
+    const [nasaList,setNasaList] = useState([])
 
     const fetchData = () => {
         fetch(nepalDistrictsDataUrl)
@@ -36,8 +38,17 @@ function MapWithFireLocation() {
         } else {
             // Set an empty location list to show no locations
             setlocationList([]);
-        }
-    };
+        fetch('https://firms.modaps.eosdis.nasa.gov/api/country/csv/acc6503ba1e4855711033abf383e5733/VIIRS_SNPP_NRT/NPL/10/2023-10-08')
+            .then((response) => response.json())
+            .then((data) => {
+                setNasaList(data);
+            })
+            .catch((error)=>{
+                console.log(error);
+            });
+}
+        
+            };
 
     useEffect(() => {
         fetchData();

@@ -18,7 +18,6 @@ const AdminComponent = () => {
 
     const verifyData = (d) => {
         const url = `http://localhost:8000/api/incident/verify/${d}`;
-        console.log(d);
         fetch(url, {
             method: 'PUT',
         })
@@ -41,13 +40,15 @@ const AdminComponent = () => {
 
 
         const logReport = [];
+        // console.log(filteredLocations[0]);
         for (let i = 0; i < filteredLocations.length; i++) {
-            console.log(filteredLocations[i]);
+
             let location = filteredLocations[i];
             logReport.push(
                 <tr key={i} className={location.fireStatus === 'inactive' ? 'inactive' : ''} >
                     <td>{location.name}</td>
-                    <td>{location.fireStatus ? 'active' : 'inactive'}</td>
+
+                    <td>{location.incident==null?'inactive':location.incident.status }</td>
                     <td>
                         {location.incident ? (
                             <Button variant="contained" onClick={() => verifyData(location.incident._id)}>
@@ -80,7 +81,6 @@ const AdminComponent = () => {
 
     const addCamera = () => {
         console.log(JSON.stringify(formData));
-        console.log("aslfjas");
         const apiUrl = 'http://localhost:8000/api/location/';
         fetch(apiUrl, {
             method: 'POST',

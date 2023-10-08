@@ -16,9 +16,12 @@ const getLocation = async (req, res) => {
                 console.log(incident);
                 return { ...loc.toObject(), incident };
             }
+            else{
+                return {...loc.toObject(), incident: null};
+            }
             return loc.toObject();
         });
-        res.status(200).json(updatedLocations);
+        return res.status(200).json(updatedLocations);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
