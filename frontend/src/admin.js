@@ -15,6 +15,22 @@ const AdminComponent = () => {
         "numbers_to_sms": ""
     });
     const [currentCameras, updateCurrentCameras] = useState([]);
+
+    const verifyData = (d) => {
+        const url = `http://localhost:8000/api/incident/verify/${d}`;
+        console.log(d);
+        fetch(url, {
+            method: 'PUT',
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                fetchCameras();
+                console.log("THE RESPONSE IS " + JSON.stringify(response))
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
     // Function to filter out null locations and generate a log report
     const generateLogReport = () => {
         if (!currentCameras || currentCameras.length === 0) {
@@ -23,34 +39,43 @@ const AdminComponent = () => {
 
         const filteredLocations = currentCameras.filter(location => location !== null);
 
-        // Create a log report
-        const logReport = filteredLocations.map((location, index) => (
-            <tr key={index} className={location.fireStatus === 'inactive' ? 'inactive' : ''}>
-                <td>{location.name}</td>
-                <td>{location.fireStatus ? 'active' : 'inactive'}</td>
-            </tr>
-        ));
 
+        const logReport = [];
+        for (let i = 0; i < filteredLocations.length; i++) {
+            console.log(filteredLocations[i]);
+            let location = filteredLocations[i];
+            logReport.push(
+                <tr key={i} className={location.fireStatus === 'inactive' ? 'inactive' : ''} >
+                    <td>{location.name}</td>
+                    <td>{location.fireStatus ? 'active' : 'inactive'}</td>
+                    <td>
+                        {location.incident ? (
+                            <Button variant="contained" onClick={() => verifyData(location.incident._id)}>
+                                Verify
+                            </Button>
+                        ) : (
+                            ""
+                        )}
+                    </td>
+                </tr>);
+        }
         return logReport;
     };
 
 
-    
-
     const addZone = () => {
         updateIsDialogOpen(!isDialogOpen);
     };
-    
+
     const fetchCameras = () => {
         fetch('http://localhost:8000/api/location/')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            updateCurrentCameras(data);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                updateCurrentCameras(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     const addCamera = () => {
@@ -58,28 +83,29 @@ const AdminComponent = () => {
         console.log("aslfjas");
         const apiUrl = 'http://localhost:8000/api/location/';
         fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json', // You may need to adjust the content type
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // You may need to adjust the content type
             },
             body: JSON.stringify(formData),
         }).then((response) => {
             console.log(response);
-        if (!response.ok) {
-            console.log(response);
-        }else{
-        updateFormData({
-            "name": "",
-            "latitude": "",
-            "longitude": "",
-            "ip": "",
-            "description": "",
-            "numbers_to_sms": ""});
-        fetchCameras();
-        }
-  }).catch((error) => {
-    console.error('There was a problem with the fetch operation:', error);
-  });
+            if (!response.ok) {
+                console.log(response);
+            } else {
+                updateFormData({
+                    "name": "",
+                    "latitude": "",
+                    "longitude": "",
+                    "ip": "",
+                    "description": "",
+                    "numbers_to_sms": ""
+                });
+                fetchCameras();
+            }
+        }).catch((error) => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
     }
 
     useEffect(() => {
