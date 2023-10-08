@@ -55,7 +55,7 @@ const AdminComponent = () => {
                                 Verify
                             </Button>
                         ) : (
-                            ""
+                            "Verified"
                         )}
                     </td>
                 </tr>);
@@ -160,6 +160,7 @@ const AdminComponent = () => {
                         <tr>
                             <th>Name</th>
                             <th>Fire Status</th>
+                            <th>Verification Status</th>
                         </tr>
                     </thead>
                     <tbody>
