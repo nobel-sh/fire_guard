@@ -4,8 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ClearIcon from '@mui/icons-material/Clear';
 
 // URL of the GeoJSON file in the public directory
 const nepalDistrictsDataUrl = '/data/nepal-districts.geojson';
