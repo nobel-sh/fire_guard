@@ -72,7 +72,7 @@ const verifyIncident = async (req, res) => {
             return res.status(404).json({ error: 'Incident not found' });
         }
         // TODO: send sms to necessary people
-        const updatedIncident = await Incident.findByIdAndUpdate(req.params.id, { status: 'active' }, { new: true });
+        const updatedIncident = await Incident.findByIdAndUpdate(req.params.id, { status: 'resolved' }, { new: true });
         res.status(200).json(updatedIncident);
     } catch (err) {
         res.status(500).json({ error: err.message });
