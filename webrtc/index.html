@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Selection and Video Display</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" async onload="socket_loaded()"></script>
+</head>
+<body>
+    <h1>Camera Selection and Video Display</h1>
+    
+    <!-- Dropdown to select media devices -->
+    <label for="cameraList">Select a camera:</label>
+    <select id="cameraList"></select>
+    
+    <!-- Video element to display the selected camera's video -->
+    <video id="videoPlayer" autoplay playsinline></video>
+    
+    <script>
+        const cameraList = document.getElementById('cameraList');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const frameInterval = 1000 / 5; // Adjust frame rate here (e.g., 5fps)
+         
+        // Function to populate the camera list dropdown
+        async function populateCameraList() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                
+                devices.forEach((device) => {
+                    if (device.kind === 'videoinput') {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.text = device.label || `Camera ${cameraList.length + 1}`;
+                        cameraList.appendChild(option);
+                    }
+                });
+                 
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
+            }
+        }
+        
+        // Function to start displaying video from the selected camera with frame processing
+        async function startDisplayingCameraVideo() {
+            const selectedDeviceId = cameraList.value;
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        deviceId: selectedDeviceId
+                    }, 
+                    audio: false 
+                });
+
+                // Create an empty output MediaStream
+                let outputVideoStream = new MediaStream();
+                let current = null;
+                // Initialize frame processing variables
+                let frameCounter = 0;
+                    function processFrame() {
+                    // Capture a frame from the input stream
+                    const inputVideo = document.createElement('video');
+                    inputVideo.srcObject = stream;
+                    inputVideo.addEventListener('loadedmetadata', () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = inputVideo.videoWidth;
+                        canvas.height = inputVideo.videoHeight;
+
+                        ctx.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
+
+                        // Check if it's time to keep a frame
+                        if (frameCounter % 30 === 0) {
+                            const frameBlob = canvas.captureStream().getVideoTracks()[0];
+                            if (current !== null){ 
+                                outputVideoStream.removeTrack(current)
+                            }
+                            current = frameBlob;
+                            outputVideoStream.addTrack(current);
+                            frameCounter = 0;
+                        }
+                        frameCounter++;
+
+                         requestAnimationFrame(processFrame);
+                    });
+                }
+                
+//                // Start processing frames
+//                requestAnimationFrame(processFrame);
+//            
+//                setTimeout(()=>{
+//                    try{
+                        const socket = io('http://localhost:5000');
+
+                        // Display the output video stream
+                        console.log(stream);
+                        videoPlayer.srcObject = outputVideoStream;
+
+                        const mediaRecorder = new MediaRecorder(outputVideoStream);
+       
+                        // Start recording the outputVideoStream
+                        mediaRecorder.start(100);               
+
+                        console.log(mediaRecorder.state);
+
+                        // When data is available from the mediaRecorder, send it to the server
+                        mediaRecorder.ondataavailable = (event) => {
+                            console.log("AAYO");
+                            if (event.data.size > 0) {
+                                socket.emit('videoChunk', event.data);
+                            }
+                        };
+ //                   }catch(e){
+ //                       console.log(e);
+ //                   }
+
+ //               }, 1000);
+
+
+
+
+
+
+
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        }
+        
+        
+
+        
+        const socket_loaded = () => {
+            console.log("LOADED HERE");
+
+
+
+            startDisplayingCameraVideo();
+
+            cameraList.addEventListener("change", () => {
+                startDisplayingCameraVideo();
+            });
+            
+            populateCameraList();
+        };
+    </script>
+</body>
+</html>
+
