@@ -51,37 +51,37 @@
                 });
 
                 // Create an empty output MediaStream
-                let outputVideoStream = new MediaStream();
-                let current = null;
-                // Initialize frame processing variables
-                let frameCounter = 0;
-                    function processFrame() {
-                    // Capture a frame from the input stream
-                    const inputVideo = document.createElement('video');
-                    inputVideo.srcObject = stream;
-                    inputVideo.addEventListener('loadedmetadata', () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = inputVideo.videoWidth;
-                        canvas.height = inputVideo.videoHeight;
-
-                        ctx.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
-
-                        // Check if it's time to keep a frame
-                        if (frameCounter % 30 === 0) {
-                            const frameBlob = canvas.captureStream().getVideoTracks()[0];
-                            if (current !== null){ 
-                                outputVideoStream.removeTrack(current)
-                            }
-                            current = frameBlob;
-                            outputVideoStream.addTrack(current);
-                            frameCounter = 0;
-                        }
-                        frameCounter++;
-
-                         requestAnimationFrame(processFrame);
-                    });
-                }
+//                let outputVideoStream = new MediaStream();
+//                let current = null;
+//                // Initialize frame processing variables
+//                let frameCounter = 0;
+//                    function processFrame() {
+//                    // Capture a frame from the input stream
+//                    const inputVideo = document.createElement('video');
+//                    inputVideo.srcObject = stream;
+//                    inputVideo.addEventListener('loadedmetadata', () => {
+//                        const canvas = document.createElement('canvas');
+//                        const ctx = canvas.getContext('2d');
+//                        canvas.width = inputVideo.videoWidth;
+//                        canvas.height = inputVideo.videoHeight;
+//
+//                        ctx.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
+//
+//                        // Check if it's time to keep a frame
+//                        if (frameCounter % 30 === 0) {
+//                            const frameBlob = canvas.captureStream().getVideoTracks()[0];
+//                            if (current !== null){ 
+//                                outputVideoStream.removeTrack(current)
+//                            }
+//                            current = frameBlob;
+//                            outputVideoStream.addTrack(current);
+//                            frameCounter = 0;
+//                        }
+//                        frameCounter++;
+//
+//                         requestAnimationFrame(processFrame);
+//                    });
+//                }
                 
 //                // Start processing frames
 //                requestAnimationFrame(processFrame);
@@ -92,9 +92,9 @@
 
                         // Display the output video stream
                         console.log(stream);
-                        videoPlayer.srcObject = outputVideoStream;
+                        videoPlayer.srcObject = stream;
 
-                        const mediaRecorder = new MediaRecorder(outputVideoStream);
+                        const mediaRecorder = new MediaRecorder(stream);
        
                         // Start recording the outputVideoStream
                         mediaRecorder.start(100);               
